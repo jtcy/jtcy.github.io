@@ -40,10 +40,10 @@
     document.getElementById("subscribe-btn").addEventListener("click", async () => {
       const OneSignal = window.OneSignal;
       try {
-        // Ask browser for permission & register subscription
+        // To register subscription
         const permission = await OneSignal.Notifications.requestPermission();
         console.log("Permission result:", permission);
-        // OneSignal's dashboard success message will appear if configured
+        // OneSignal's dashboard success message 
       } catch (error) {
         console.error("Subscription error:", error);
       }
