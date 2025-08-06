@@ -34,11 +34,17 @@
         document.getElementById('subscribe-btn').addEventListener('click', async () => {
             const OneSignal = window.OneSignal;
             if (OneSignal) {
-                // Show the subscription prompt using the new API
-                await OneSignal.push(() => OneSignal.prompt());
+                try {
+                    // Use OneSignal.push() to trigger the prompt
+                    await OneSignal.push(() => {
+                        OneSignal.showHttpPrompt();
+                    });
 
-                // Show success message after subscription
-                document.getElementById('success-msg').style.display = 'block';
+                    // Show success message after subscription
+                    document.getElementById('success-msg').style.display = 'block';
+                } catch (error) {
+                    console.error('Error during subscription prompt:', error);
+                }
             }
         });
     </script>
