@@ -1,52 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneSignal Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneSignal v16 Test</title>
 
-    <!-- OneSignal Web SDK -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "062653ba-a024-4307-895f-e3b65bba57ac",  // Your App ID
-        });
+  <!-- OneSignal SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Replace with your OneSignal App ID
       });
-    </script>
+    });
+  </script>
 </head>
 <body>
-    <h1>OneSignal Push Notifications Test</h1>
-    <p>Click the button below to subscribe to push notifications.</p>
+  <h1>OneSignal v16 Push Test</h1>
+  <p>Click below to subscribe to notifications:</p>
+  <button id="subscribe-btn">Subscribe to Notifications</button>
 
-    <!-- Subscribe Button -->
-    <button id="subscribe-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
-        Subscribe to Notifications
-    </button>
+  <script>
+    document.getElementById('subscribe-btn').addEventListener('click', async () => {
+      const OneSignal = window.OneSignal;
+      try {
+        // ✅ Correct way in v16: request permission explicitly
+        const permission = await OneSignal.Notifications.requestPermission();
+        console.log("Notification permission result:", permission);
 
-    <div id="success-msg" style="display:none; color: green; margin-top: 20px;">
-        Thank you for subscribing to push notifications!
-    </div>
-
-    <script>
-        // Trigger subscription on button click
-        document.getElementById('subscribe-btn').addEventListener('click', async () => {
-            const OneSignal = window.OneSignal;
-            if (OneSignal) {
-                try {
-                    // Use OneSignal.push() to trigger the prompt
-                    await OneSignal.push(() => {
-                        OneSignal.showHttpPrompt();
-                    });
-
-                    // Show success message after subscription
-                    document.getElementById('success-msg').style.display = 'block';
-                } catch (error) {
-                    console.error('Error during subscription prompt:', error);
-                }
-            }
-        });
-    </script>
+        if (permission === "granted") {
+          alert("You are now subscribed to push notifications!");
+        } else {
+          alert("Permission denied or dismissed.");
+        }
+      } catch (error) {
+        console.error("Error during subscription:", error);
+      }
+    });
+  </script>
 </body>
 </html>
