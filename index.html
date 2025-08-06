@@ -1,24 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OneSignal v16 Test</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OneSignal Push Notifications</title>
 
-  <!-- OneSignal SDK -->
+  <!-- OneSignal SDK v16 -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
+    OneSignalDeferred.push(async function (OneSignal) {
       await OneSignal.init({
-        appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Your OneSignal App ID
-        notifyButton: { enable: true } // Enables OneSignal's built-in bell & UI
+        appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Your App ID
       });
     });
   </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>OneSignal v16 Push Test</h1>
-  <p>Click the OneSignal bell icon or subscribe prompt to enable notifications.</p>
+  <h1>OneSignal Web Push Test</h1>
+  <p>Click the button below to subscribe to push notifications.</p>
+
+  <!-- Subscribe Button -->
+  <button id="subscribe-btn">Subscribe to Notifications</button>
+
+  <script>
+    document.getElementById("subscribe-btn").addEventListener("click", async () => {
+      const OneSignal = window.OneSignal;
+      try {
+        // Ask browser for permission & register subscription
+        const permission = await OneSignal.Notifications.requestPermission();
+        console.log("Permission result:", permission);
+        // OneSignal's dashboard success message will appear if configured
+      } catch (error) {
+        console.error("Subscription error:", error);
+      }
+    });
+  </script>
 </body>
 </html>
