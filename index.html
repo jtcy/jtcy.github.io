@@ -25,13 +25,20 @@
         Subscribe to Notifications
     </button>
 
+    <div id="success-msg" style="display:none; color: green; margin-top: 20px;">
+        Thank you for subscribing to push notifications!
+    </div>
+
     <script>
         // Trigger subscription on button click
         document.getElementById('subscribe-btn').addEventListener('click', async () => {
             const OneSignal = window.OneSignal;
             if (OneSignal) {
-                // Show the subscription prompt
-                await OneSignal.push(() => OneSignal.showSlidedownPrompt());
+                // Show the subscription prompt using the new API
+                await OneSignal.push(() => OneSignal.prompt());
+
+                // Show success message after subscription
+                document.getElementById('success-msg').style.display = 'block';
             }
         });
     </script>
