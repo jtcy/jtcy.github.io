@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OneSignal Push Notifications</title>
+  <title>OneSignal Web Push Test</title>
 
   <!-- OneSignal SDK v16 -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -13,6 +13,19 @@
       await OneSignal.init({
         appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Your App ID
       });
+
+      // Check if the user is already subscribed
+      const userId = await OneSignal.getUserId(); // Get the user ID (Player ID)
+      console.log("OneSignal user ID:", userId);
+
+      if (userId) {
+        // User is already subscribed
+        document.getElementById("subscribe-btn").disabled = true; // Disable the button
+        alert("You are already subscribed to notifications!");
+      } else {
+        // Not yet subscribed, proceed with normal flow
+        console.log("User is not subscribed yet.");
+      }
     });
   </script>
 
@@ -40,14 +53,16 @@
     document.getElementById("subscribe-btn").addEventListener("click", async () => {
       const OneSignal = window.OneSignal;
       try {
-        // Request notification permission
+        // Request permission from the user
         const permission = await OneSignal.Notifications.requestPermission();
         console.log("Permission result:", permission);
 
         if (permission === "granted") {
-          // Retrieve and log subscription ID (doesn't interfere with OneSignal toast)
-          const subscription = await OneSignal.User.PushSubscription.get();
-          console.log("Subscription ID:", subscription.id);
+          console.log("User subscribed successfully!");
+          alert("Thanks for subscribing!");
+        } else {
+          console.log("Subscription denied!");
+          alert("You need to enable notifications to subscribe.");
         }
       } catch (error) {
         console.error("Subscription error:", error);
