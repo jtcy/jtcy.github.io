@@ -26,20 +26,20 @@
       font-size: 16px;
       padding: 10px 20px;
       cursor: pointer;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
     #debug-panel {
-      margin-top: 20px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      display: inline-block;
+      margin-top: 30px;
+      font-size: 14px;
+      color: #333;
       text-align: left;
-      width: 350px;
-      font-family: monospace;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
       background: #f9f9f9;
-    }
-    .debug-line {
-      margin: 5px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
   </style>
 </head>
@@ -52,55 +52,68 @@
 
   <!-- Debug Panel -->
   <div id="debug-panel">
-    <div class="debug-line">Permission: <span id="permission-status">Loading...</span></div>
-    <div class="debug-line">Subscription ID: <span id="subscription-id">Loading...</span></div>
-    <div class="debug-line">Service Worker: <span id="sw-status">Checking...</span></div>
+    <strong>Debug Panel:</strong>
+    <div id="permission-status">Permission: Checking...</div>
+    <div id="subscription-status">Subscription ID: None</div>
   </div>
 
   <script>
+    const permissionStatus = document.getElementById("permission-status");
+    const subscriptionStatus = document.getElementById("subscription-status");
+
     async function updateDebugPanel() {
       const OneSignal = window.OneSignal;
-      // Check permission
-      const permissionState = await navigator.permissions.query({ name: "notifications" });
-      document.getElementById("permission-status").innerText = permissionState.state;
 
-      // Check subscription ID
-      const subId = await OneSignal.User.PushSubscription.getId();
-      document.getElementById("subscription-id").innerText = subId || "Not subscribed";
+      // Check current browser permission
+      const permission = await OneSignal.Notifications.permission;
+      permissionStatus.textContent = "Permission: " + permission;
 
-      // Check Service Worker
-      const swReg = await navigator.serviceWorker.getRegistration();
-      document.getElementById("sw-status").innerText = swReg ? "Registered" : "Not registered";
+      // Check if already subscribed
+      const subId = OneSignal.User.PushSubscription.id;
+      if (subId) {
+        subscriptionStatus.textContent = "Subscription ID: " + subId;
+      } else {
+        subscriptionStatus.textContent = "Subscription ID: None";
+      }
     }
 
     document.getElementById("subscribe-btn").addEventListener("click", async () => {
       const OneSignal = window.OneSignal;
       try {
-        const permissionState = await navigator.permissions.query({ name: "notifications" });
-        console.log("Current browser permission:", permissionState.state);
+        // Check permission state first
+        const permissionState = await OneSignal.Notifications.permission;
+        console.log("Current browser permission:", permissionState);
 
-        if (permissionState.state === "granted") {
-          const id = await OneSignal.User.PushSubscription.getId();
-          console.log("Push Subscription ID:", id);
-          alert("You're already subscribed!");
-        } else {
-          const permission = await OneSignal.Notifications.requestPermission();
-          console.log("Permission result:", permission);
-
-          if (permission === "granted") {
-            alert("Thanks for subscribing!");
-          } else {
-            alert("Permission is denied. Please enable notifications in browser settings.");
+        if (permissionState === "granted") {
+          const id = OneSignal.User.PushSubscription.id;
+          if (id) {
+            alert("You're already subscribed! ID: " + id);
+            await updateDebugPanel();
+            return;
           }
         }
-        updateDebugPanel();
+
+        // Request permission if not granted
+        const permission = await OneSignal.Notifications.requestPermission();
+        console.log("Permission result:", permission);
+
+        if (permission === "granted") {
+          const id = OneSignal.User.PushSubscription.id;
+          console.log("New Subscription ID:", id);
+          alert("Thanks for subscribing! ID: " + id);
+        } else {
+          alert("Permission denied. Please enable notifications in browser settings.");
+        }
+
+        await updateDebugPanel();
       } catch (error) {
         console.error("Subscription error:", error);
+        alert("An error occurred during subscription. Check console logs.");
       }
     });
 
-    // Auto-update debug panel on load
-    window.addEventListener("load", updateDebugPanel);
+    // Update panel on load
+    document.addEventListener("DOMContentLoaded", updateDebugPanel);
   </script>
 </body>
 </html>
