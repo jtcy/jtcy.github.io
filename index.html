@@ -13,9 +13,6 @@
       await OneSignal.init({
         appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Your App ID
       });
-
-      // Run debug panel update AFTER OneSignal is initialized
-      updateDebugPanel();
     });
   </script>
 
@@ -23,26 +20,12 @@
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      margin-top: 50px;
+      margin-top: 100px;
     }
     button {
       font-size: 16px;
       padding: 10px 20px;
       cursor: pointer;
-      margin-top: 20px;
-    }
-    #debug-panel {
-      margin-top: 30px;
-      font-size: 14px;
-      color: #333;
-      text-align: left;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      background: #f9f9f9;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
     }
   </style>
 </head>
@@ -53,66 +36,17 @@
   <!-- Subscribe Button -->
   <button id="subscribe-btn">Subscribe to Notifications</button>
 
-  <!-- Debug Panel -->
-  <div id="debug-panel">
-    <strong>Debug Panel:</strong>
-    <div id="permission-status">Permission: Checking...</div>
-    <div id="subscription-status">Subscription ID: None</div>
-  </div>
-
   <script>
-    const permissionStatus = document.getElementById("permission-status");
-    const subscriptionStatus = document.getElementById("subscription-status");
-
-    // Update Debug Panel
-    async function updateDebugPanel() {
-      const OneSignal = window.OneSignal;
-
-      // Check current browser permission
-      const permission = await OneSignal.Notifications.permission;
-      permissionStatus.textContent = "Permission: " + permission;
-
-      // Check if already subscribed
-      const subId = OneSignal.User.PushSubscription.id;
-      if (subId) {
-        subscriptionStatus.textContent = "Subscription ID: " + subId;
-      } else {
-        subscriptionStatus.textContent = "Subscription ID: None";
-      }
-    }
-
-    // Subscribe Button Click
     document.getElementById("subscribe-btn").addEventListener("click", async () => {
-      window.OneSignalDeferred.push(async function (OneSignal) {
-        try {
-          const permissionState = await OneSignal.Notifications.permission;
-          console.log("Current browser permission:", permissionState);
-
-          if (permissionState === "granted") {
-            const id = OneSignal.User.PushSubscription.id;
-            if (id) {
-              alert("You're already subscribed! ID: " + id);
-              await updateDebugPanel();
-              return;
-            }
-          }
-
-          const permission = await OneSignal.Notifications.requestPermission();
-          console.log("Permission result:", permission);
-
-          if (permission === "granted") {
-            const id = OneSignal.User.PushSubscription.id;
-            alert("Thanks for subscribing! ID: " + id);
-          } else {
-            alert("Permission denied. Please enable notifications in browser settings.");
-          }
-
-          await updateDebugPanel();
-        } catch (error) {
-          console.error("Subscription error:", error);
-          alert("An error occurred during subscription. Check console logs.");
-        }
-      });
+      const OneSignal = window.OneSignal;
+      try {
+        // Ask browser for permission & register subscription
+        const permission = await OneSignal.Notifications.requestPermission();
+        console.log("Permission result:", permission);
+        // OneSignal auto-displays "Thanks for subscribing" if successful
+      } catch (error) {
+        console.error("Subscription error:", error);
+      }
     });
   </script>
 </body>
