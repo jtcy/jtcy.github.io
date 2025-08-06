@@ -11,33 +11,14 @@
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({
-        appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Replace with your OneSignal App ID
+        appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Your OneSignal App ID
+        notifyButton: { enable: true } // Enables OneSignal's built-in bell & UI
       });
     });
   </script>
 </head>
 <body>
   <h1>OneSignal v16 Push Test</h1>
-  <p>Click below to subscribe to notifications:</p>
-  <button id="subscribe-btn">Subscribe to Notifications</button>
-
-  <script>
-    document.getElementById('subscribe-btn').addEventListener('click', async () => {
-      const OneSignal = window.OneSignal;
-      try {
-        // ✅ Correct way in v16: request permission explicitly
-        const permission = await OneSignal.Notifications.requestPermission();
-        console.log("Notification permission result:", permission);
-
-        if (permission === "granted") {
-          alert("You are now subscribed to push notifications!");
-        } else {
-          alert("Permission denied or dismissed.");
-        }
-      } catch (error) {
-        console.error("Error during subscription:", error);
-      }
-    });
-  </script>
+  <p>Click the OneSignal bell icon or subscribe prompt to enable notifications.</p>
 </body>
 </html>
