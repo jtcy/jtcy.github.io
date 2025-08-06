@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneSignal Test</title>
+
+    <!-- OneSignal Web SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "062653ba-a024-4307-895f-e3b65bba57ac",  // Your App ID
+        });
+      });
+    </script>
+</head>
+<body>
+    <h1>OneSignal Push Notifications Test</h1>
+    <p>Click the button below to subscribe to push notifications.</p>
+
+    <!-- Subscribe Button -->
+    <button id="subscribe-btn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+        Subscribe to Notifications
+    </button>
+
+    <script>
+        // Trigger subscription on button click
+        document.getElementById('subscribe-btn').addEventListener('click', async () => {
+            const OneSignal = window.OneSignal;
+            if (OneSignal) {
+                // Show the subscription prompt
+                await OneSignal.push(() => OneSignal.showSlidedownPrompt());
+            }
+        });
+    </script>
+</body>
+</html>
