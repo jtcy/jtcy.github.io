@@ -13,7 +13,36 @@
       await OneSignal.init({
         appId: "062653ba-a024-4307-895f-e3b65bba57ac", // Your App ID
       });
+
+      // ✅ Listen for subscription success
+      OneSignal.Notifications.addEventListener("subscribe", (event) => {
+        console.log("User subscribed:", event);
+        showToast("🎉 Thanks for subscribing to notifications!");
+      });
+
+      // ✅ Listen for unsubscription (optional)
+      OneSignal.Notifications.addEventListener("unsubscribe", (event) => {
+        console.log("User unsubscribed:", event);
+        showToast("🔕 You have unsubscribed from notifications.");
+      });
     });
+
+    // ✅ Custom Toast Function
+    function showToast(message) {
+      const toast = document.createElement("div");
+      toast.innerText = message;
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.right = "20px";
+      toast.style.background = "#333";
+      toast.style.color = "#fff";
+      toast.style.padding = "10px 20px";
+      toast.style.borderRadius = "5px";
+      toast.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+      toast.style.zIndex = "9999";
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
   </script>
 
   <style>
@@ -43,9 +72,15 @@
         // Ask browser for permission & register subscription
         const permission = await OneSignal.Notifications.requestPermission();
         console.log("Permission result:", permission);
-        // OneSignal's dashboard success message will appear if configured
+
+        if (permission === "granted") {
+          showToast("🎉 Thanks for subscribing to notifications!");
+        } else {
+          showToast("⚠️ Permission denied. Please enable notifications.");
+        }
       } catch (error) {
         console.error("Subscription error:", error);
+        showToast("❌ Failed to subscribe.");
       }
     });
   </script>
